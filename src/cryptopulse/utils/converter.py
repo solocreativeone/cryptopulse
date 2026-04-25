@@ -1,74 +1,58 @@
-import httpx
 import json
 import time
 from pathlib import Path
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal
 from typing import Dict, Optional
+from ..api.client import FiatAPIClient
+from .finance import FinancialCalculator
 
 RATES_CACHE = Path("~/.cryptopulse/rates.json").expanduser()
 TTL_24H = 24 * 60 * 60
 
 class CurrencyConverter:
     def __init__(self):
-        self.fiat_rates: Dict[str, Decimal] = {"USD": Decimal("1.0")}
-        self.crypto_rates: Dict[str, Decimal] = {}
-        self.last_fetched = 0.0
+        self.client = FiatAPIClient()
+        self.calculator = FinancialCalculator()
         self.fallback_ngn = Decimal("1354.0")
 
+    @property
+    def fiat_rates(self) -> Dict[str, Decimal]:
+        return self.calculator.fiat_rates
+
+    @fiat_rates.setter
+    def fiat_rates(self, rates: Dict[str, Decimal]):
+        self.calculator.set_fiat_rates(rates)
+
     async def get_rates(self) -> Dict[str, Decimal]:
-        # Try to load from cache first
         cached_data = self._load_cache()
         if cached_data:
             rates = {k: Decimal(str(v)) for k, v in cached_data.get("rates", {}).items()}
             timestamp = cached_data.get("timestamp", 0)
             if time.time() - timestamp < TTL_24H:
-                self.fiat_rates = rates
-                return self.fiat_rates
+                self.calculator.set_fiat_rates(rates)
+                return rates
 
-        # Fetch new rates
         try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
-                response = await client.get("https://api.frankfurter.dev/v1/latest?from=USD")
-                response.raise_for_status()
-                data = response.json()
-                new_rates = {k: Decimal(str(v)) for k, v in data.get("rates", {}).items()}
-                new_rates["USD"] = Decimal("1.0")
-                self._save_cache(new_rates)
-                self.fiat_rates = new_rates
+            data = await self.client.get_rates(base="USD")
+            new_rates = {k: Decimal(str(v)) for k, v in data.get("rates", {}).items()}
+            new_rates["USD"] = Decimal("1.0")
+            self._save_cache(new_rates)
+            self.calculator.set_fiat_rates(new_rates)
         except Exception:
-            # If offline and cache expired, use last cached rates or fallback
             if cached_data:
-                self.fiat_rates = {k: Decimal(str(v)) for k, v in cached_data.get("rates", {}).items()}
+                rates = {k: Decimal(str(v)) for k, v in cached_data.get("rates", {}).items()}
+                self.calculator.set_fiat_rates(rates)
             else:
-                self.fiat_rates["NGN"] = self.fallback_ngn
+                rates = {"USD": Decimal("1.0"), "NGN": self.fallback_ngn}
+                self.calculator.set_fiat_rates(rates)
         
-        return self.fiat_rates
+        return self.calculator.fiat_rates
 
     def set_crypto_rates(self, prices: Dict[str, Decimal]):
-        """
-        Store crypto prices (symbol/id -> USD price) for cross-asset conversion.
-        """
-        self.crypto_rates = {k.upper(): v for k, v in prices.items()}
+        self.calculator.set_crypto_rates(prices)
 
     def convert(self, amount: Decimal, to_currency: str) -> Decimal:
-        to_currency = to_currency.upper()
-        
-        # 1. Handle Crypto-to-Crypto
-        if to_currency in self.crypto_rates:
-            target_price_usd = self.crypto_rates[to_currency]
-            if target_price_usd == 0:
-                return Decimal("0")
-            return (amount / target_price_usd)
-
-        # 2. Handle Fiat
-        if to_currency in self.fiat_rates:
-            return amount * self.fiat_rates[to_currency]
-            
-        # 3. Handle Fallbacks
-        if to_currency == "NGN" and "NGN" not in self.fiat_rates:
-             return amount * self.fallback_ngn
-             
-        return amount # Fallback to USD if currency unknown
+        return self.calculator.convert(amount, "USD", to_currency)
 
     def _save_cache(self, rates: Dict[str, Decimal]):
         try:
