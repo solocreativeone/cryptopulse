@@ -55,6 +55,14 @@ ZEN_QUOTES = [
 ]
 
 async def run_list(currency: str, export: bool = False, snap: bool = False):
+    """
+    Fetches and displays the top 10 cryptocurrencies in a table.
+    
+    Args:
+        currency: The currency code to convert prices to.
+        export: Whether to save the full fetch result to a JSON file.
+        snap: Whether to capture an SVG screenshot of the output.
+    """
     fetcher = CryptoFetcher()
     converter = CurrencyConverter()
     
@@ -70,6 +78,7 @@ async def run_list(currency: str, export: bool = False, snap: bool = False):
     if fetcher.is_stale or converter.is_stale:
         console.print(Panel("[bold red]Network unreachable. Using local cache...[/bold red]", border_style="red"))
 
+    # Map crypto rates for internal conversion logic
     crypto_prices = {coin.symbol: coin.current_price for coin in coins}
     crypto_prices.update({coin.id: coin.current_price for coin in coins})
     converter.set_crypto_rates(crypto_prices)
@@ -107,6 +116,9 @@ async def run_list(currency: str, export: bool = False, snap: bool = False):
             console.print(f"\n[bold red]✗ Export failed: {e}[/bold red]")
 
 async def run_stat(coin_id: str, snap: bool = False):
+    """
+    Fetches and displays detailed stats and 7-day trend for a specific coin.
+    """
     fetcher = CryptoFetcher()
     coin = await fetcher.get_coin_details(coin_id)
     
@@ -144,6 +156,9 @@ async def run_stat(coin_id: str, snap: bool = False):
         export_ui_snap("stat")
 
 async def run_global(snap: bool = False):
+    """
+    Displays global cryptocurrency market metrics.
+    """
     fetcher = CryptoFetcher()
     global_data = await fetcher.get_global_data()
     
@@ -170,6 +185,9 @@ async def run_global(snap: bool = False):
         export_ui_snap("global")
 
 async def run_watch(coin_ids: List[str], interval: int, snap: bool = False):
+    """
+    Provides a real-time price monitoring loop for specific assets.
+    """
     fetcher = CryptoFetcher()
     snapped = False
     
@@ -232,6 +250,9 @@ async def run_watch(coin_ids: List[str], interval: int, snap: bool = False):
             await asyncio.sleep(interval)
 
 async def run_zen(coin_id: str, snap: bool = False):
+    """
+    Displays a centered, minimalist view for a single asset with a random quote.
+    """
     fetcher = CryptoFetcher()
     coins = await fetcher.get_latest_prices()
     coin = next((c for c in coins if c.id == coin_id.lower() or c.symbol == coin_id.lower()), None)
@@ -344,6 +365,9 @@ def fly():
     webbrowser.open("https://xkcd.com/353/")
 
 def handle_error(e: Exception, debug: bool):
+    """
+    Standardizes error reporting with user-friendly messages for common issues.
+    """
     msg = str(e)
     error_type = type(e).__name__
     
@@ -361,15 +385,19 @@ def handle_error(e: Exception, debug: bool):
         raise e
 
 def cpl():
+    """CLI entry point for the list command."""
     app(["list"] + sys.argv[1:])
 
 def cpw():
+    """CLI entry point for the watch command."""
     app(["watch"] + sys.argv[1:])
 
 def cpz():
+    """CLI entry point for the zen command."""
     app(["zen"] + sys.argv[1:])
 
 def cpg():
+    """CLI entry point for the global command."""
     app(["global"] + sys.argv[1:])
 
 if __name__ == "__main__":

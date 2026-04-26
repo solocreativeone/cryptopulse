@@ -7,19 +7,35 @@ from decimal import Decimal
 from ..models import Coin, GlobalData
 from ..api.client import CryptoAPIClient, NetworkError
 
+# Local file system cache for API results
 CACHE_FILE = Path("~/.cryptopulse/cache.json").expanduser()
+# 60 seconds time-to-live for price data cache
 TTL_60S = 60
 
 class CryptoFetcher:
+    """
+    Service responsible for fetching and caching cryptocurrency market data.
+    
+    Implements a transparent caching layer and handles graceful fallback to stale
+    data when the network or API is unavailable.
+    """
+    
     def __init__(self):
         self.client = CryptoAPIClient()
         self.is_stale = False
 
     @property
     def api_url(self) -> str:
+        """Returns the markets endpoint URL from the client."""
         return f"{self.client.base_url}/coins/markets"
 
     async def get_latest_prices(self, per_page: int = 100) -> List[Coin]:
+        """
+        Retrieves the latest market prices for the top N coins.
+        
+        Tries the cache first. If cache is missing or expired, fetches fresh data 
+        from the API. If the API fetch fails, falls back to stale cache.
+        """
         self.is_stale = False
         cached_data = self._load_cache()
         if cached_data:
@@ -33,11 +49,13 @@ class CryptoFetcher:
             return [self._parse_coin(item) for item in data]
         except (NetworkError, Exception):
             self.is_stale = True
+            # Graceful degradation: return stale cache if available
             if cached_data:
                 return [self._parse_coin(item) for item in cached_data.get("data", [])]
             return []
 
     async def get_coin_details(self, coin_id: str) -> Optional[Coin]:
+        """Fetches granular details for a specific coin by its ID."""
         try:
             data = await self.client.get_coin_details(coin_id)
             return self._parse_coin_details(data)
@@ -45,6 +63,7 @@ class CryptoFetcher:
             return None
 
     async def get_global_data(self) -> Optional[GlobalData]:
+        """Fetches high-level global crypto market statistics."""
         try:
             data = await self.client.get_global_data()
             raw_data = data.get("data", {})
@@ -63,6 +82,7 @@ class CryptoFetcher:
             return None
 
     def _parse_coin(self, item: dict) -> Coin:
+        """Parses raw market list item into a Coin model."""
         sparkline = item.get("sparkline_in_7d", {}).get("price")
         if sparkline:
             sparkline = [Decimal(str(p)) for p in sparkline]
@@ -82,6 +102,7 @@ class CryptoFetcher:
         )
 
     def _parse_coin_details(self, data: dict) -> Coin:
+        """Parses raw detailed coin data into a Coin model."""
         market_data = data.get("market_data", {})
         sparkline = market_data.get("sparkline_7d", {}).get("price")
         if sparkline:
@@ -102,6 +123,7 @@ class CryptoFetcher:
         )
 
     def _save_cache(self, data: list):
+        """Serializes and saves API response to local disk."""
         try:
             CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
             CACHE_FILE.write_text(json.dumps({
@@ -112,6 +134,7 @@ class CryptoFetcher:
             pass
 
     def _load_cache(self) -> Optional[dict]:
+        """Loads cached API response from local disk."""
         if not CACHE_FILE.exists():
             return None
         try:

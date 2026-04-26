@@ -6,10 +6,19 @@ from typing import Dict, Optional
 from ..api.client import FiatAPIClient, NetworkError
 from .finance import FinancialCalculator
 
+# Cache file for fiat exchange rates
 RATES_CACHE = Path("~/.cryptopulse/rates.json").expanduser()
+# 24 hours time-to-live for exchange rates
 TTL_24H = 24 * 60 * 60
 
 class CurrencyConverter:
+    """
+    Handles conversion between different fiat and cryptocurrency assets.
+    
+    Uses a FinancialCalculator for precise math and maintains a local cache
+     of fiat exchange rates to minimize API calls.
+    """
+    
     def __init__(self):
         self.client = FiatAPIClient()
         self.calculator = FinancialCalculator()
@@ -18,13 +27,21 @@ class CurrencyConverter:
 
     @property
     def fiat_rates(self) -> Dict[str, Decimal]:
+        """Returns the current fiat exchange rates from the calculator."""
         return self.calculator.fiat_rates
 
     @fiat_rates.setter
     def fiat_rates(self, rates: Dict[str, Decimal]):
+        """Updates the fiat exchange rates in the calculator."""
         self.calculator.set_fiat_rates(rates)
 
     async def get_rates(self) -> Dict[str, Decimal]:
+        """
+        Retrieves and caches the latest fiat exchange rates.
+        
+        Prioritizes the local cache within the TTL. Fetches from the API
+        if necessary and falls back to stale data or hardcoded defaults on failure.
+        """
         self.is_stale = False
         cached_data = self._load_cache()
         if cached_data:
@@ -42,6 +59,7 @@ class CurrencyConverter:
             self.calculator.set_fiat_rates(new_rates)
         except (NetworkError, Exception):
             self.is_stale = True
+            # Graceful fallback to stale cache or hardcoded NGN default
             if cached_data:
                 rates = {k: Decimal(str(v)) for k, v in cached_data.get("rates", {}).items()}
                 self.calculator.set_fiat_rates(rates)
@@ -52,12 +70,19 @@ class CurrencyConverter:
         return self.calculator.fiat_rates
 
     def set_crypto_rates(self, prices: Dict[str, Decimal]):
+        """Injects current crypto prices (vs USD) into the calculator for conversions."""
         self.calculator.set_crypto_rates(prices)
 
     def convert(self, amount: Decimal, to_currency: str) -> Decimal:
+        """
+        Performs asset conversion from USD to the target currency.
+        
+        Supported targets include fiat (EUR, NGN, etc.) and crypto (BTC, SOL, etc.).
+        """
         return self.calculator.convert(amount, "USD", to_currency)
 
     def _save_cache(self, rates: Dict[str, Decimal]):
+        """Persists fiat rates to local disk as strings to maintain precision."""
         try:
             RATES_CACHE.parent.mkdir(parents=True, exist_ok=True)
             serializable_rates = {k: str(v) for k, v in rates.items()}
@@ -69,6 +94,7 @@ class CurrencyConverter:
             pass
 
     def _load_cache(self) -> Optional[Dict]:
+        """Loads cached fiat rates from local disk."""
         if not RATES_CACHE.exists():
             return None
         try:
