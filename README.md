@@ -13,6 +13,27 @@ High-performance, production-grade cryptocurrency CLI utility with high-precisio
 - 🎨 **Dynamic UI:** Beautifully formatted tables with sparklines and auto-updating headers via `Rich`.
 - 🧘 **Minimalist Mode:** A focused `zen` view with curated market philosophy quotes for deep focus.
 
+## Visuals
+
+Experience CryptoPulse in your terminal. These screenshots are automatically generated using the `--snap` flag.
+
+### Market Overview
+![List View](docs/screenshots/list.svg)
+
+### Deep Analytics
+<p align="center">
+  <img src="docs/screenshots/stat.svg" alt="Coin Statistics" width="400" />
+  <img src="docs/screenshots/global.svg" alt="Global Data" width="400" />
+</p>
+
+### Zen Mode
+<p align="center">
+  <img src="docs/screenshots/zen.svg" alt="Zen Mode" width="600" />
+</p>
+
+### Live Monitoring
+![Live Watcher](docs/screenshots/watch.svg)
+
 <p align="center">
   <a href="https://typer.tiangolo.com/"><img src="https://img.shields.io/badge/Typer-4B32C3?style=for-the-badge&logo=python&logoColor=white" alt="Typer" /></a>
   <a href="https://rich.readthedocs.io/"><img src="https://img.shields.io/badge/Rich-black?style=for-the-badge&logo=python&logoColor=white" alt="Rich" /></a>

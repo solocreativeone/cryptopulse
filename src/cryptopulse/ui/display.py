@@ -6,6 +6,21 @@ from rich.console import Group, Console
 from rich.panel import Panel
 from rich.align import Align
 
+from pathlib import Path
+
+console = Console(record=True)
+
+def export_ui_snap(filename: str):
+    """
+    Captures the current console state and saves it as an SVG screenshot.
+    """
+    screenshot_dir = Path("docs/screenshots")
+    screenshot_dir.mkdir(parents=True, exist_ok=True)
+    
+    path = screenshot_dir / f"{filename}.svg"
+    console.save_svg(str(path), title="CryptoPulse Terminal")
+    console.print(f"\n[italic cyan]📸 Screenshot saved to {screenshot_dir}/[/italic cyan]")
+
 def get_high_density_sparkline(prices: Optional[List[Decimal]], width: int = 15) -> Text:
     if not prices or len(prices) < 2:
         return Text("─" * width, style="dim")
@@ -59,7 +74,6 @@ def format_currency(amount: Decimal, currency: str, precision: Optional[int] = N
     return f"{symbol}{val:,.{precision}f}{suffix}"
 
 def create_crypto_table(title: str, currency_label: str) -> Table:
-    console = Console()
     width = console.width
     show_extra = width > 70
 
