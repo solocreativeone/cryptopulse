@@ -124,4 +124,4 @@ pytest
 ```
 
 ## License
-MIT
+[MIT](LICENSE)
