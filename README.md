@@ -12,6 +12,7 @@ High-performance, production-grade cryptocurrency CLI utility with high-precisio
 - 🛡️ **Resilient Infrastructure:** Automated retries and tiered caching (24hr TTL for rates, 60s for prices).
 - 🎨 **Dynamic UI:** Beautifully formatted tables with sparklines and auto-updating headers via `Rich`.
 - 🧘 **Minimalist Mode:** A focused `zen` view with curated market philosophy quotes for deep focus.
+- 📸 **Auto-Doc Screenshots:** Generate high-fidelity SVG screenshots of any terminal output using the `--snap` flag.
 
 ## Visuals
 
