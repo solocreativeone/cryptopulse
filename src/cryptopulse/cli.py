@@ -3,6 +3,7 @@ import typer
 import random
 import webbrowser
 import time
+from datetime import datetime
 from typing import List, Optional, Dict
 from decimal import Decimal
 from rich.console import Console, Group
@@ -11,6 +12,7 @@ from rich.panel import Panel
 from rich.live import Live
 from rich.align import Align
 from rich.text import Text
+from rich.spinner import Spinner
 from pydantic import ValidationError
 from httpx import HTTPStatusError, RequestError
 
@@ -139,24 +141,31 @@ async def run_global():
 async def run_watch(coin_ids: List[str], interval: int):
     fetcher = CryptoFetcher()
     
-    with Live(auto_refresh=False, console=console) as live:
+    with Live(auto_refresh=True, console=console) as live:
         while True:
             coins = await fetcher.get_latest_prices()
             filtered_coins = [c for c in coins if c.id in coin_ids or c.symbol.lower() in coin_ids]
             
+            now = datetime.now().strftime("%H:%M:%S")
+            sync_signal = Align.right(Text.from_markup("[blink green]●[/blink green]"))
+            
             if not filtered_coins:
                 live.update(Panel("[red]No watched coins found in top 100.[/red]", title="Watcher"))
             else:
-                table = Table(title=f"CryptoPulse Watcher (refreshing every {interval}s)")
+                table = Table(title="CryptoPulse Live Watcher")
                 table.add_column("Symbol", style="cyan")
                 table.add_column("Price (USD)", justify="right", style="green")
                 
                 for coin in filtered_coins:
                     table.add_row(coin.symbol.upper(), format_currency(coin.current_price, "USD"))
                 
-                live.update(table)
+                footer = Group(
+                    Align.right(Text(f"Last Updated: {now}", style="dim")),
+                    Align.center(Spinner("dots", text="Monitoring..."))
+                )
+                
+                live.update(Group(sync_signal, table, footer))
             
-            live.refresh()
             await asyncio.sleep(interval)
 
 async def run_zen(coin_id: str):

@@ -2,7 +2,7 @@ from typing import List, Optional
 from decimal import Decimal
 from rich.table import Table
 from rich.text import Text
-from rich.console import Group
+from rich.console import Group, Console
 from rich.panel import Panel
 from rich.align import Align
 
@@ -38,24 +38,39 @@ def format_currency(amount: Decimal, currency: str, precision: Optional[int] = N
     currency_upper = currency.upper()
     symbol = symbols.get(currency_upper, currency_upper + " ")
     
+    # Human-readable formatting for large values
+    suffix = ""
+    val = amount
+    if amount >= 1_000_000_000_000:
+        val = amount / 1_000_000_000_000
+        suffix = "T"
+    elif amount >= 1_000_000_000:
+        val = amount / 1_000_000_000
+        suffix = "B"
+
     if precision is None:
-        # Use higher precision for crypto-to-crypto ratios or small prices
-        if currency_upper in ["BTC", "ETH", "SOL"] or (amount < 1 and amount > 0):
+        if suffix:
+            precision = 2
+        elif currency_upper in ["BTC", "ETH", "SOL"] or (amount < 1 and amount > 0):
             precision = 4
         else:
             precision = 2
             
-    return f"{symbol}{amount:,.{precision}f}"
+    return f"{symbol}{val:,.{precision}f}{suffix}"
 
 def create_crypto_table(title: str, currency_label: str) -> Table:
-    table = Table(title=title)
-    table.add_column("Rank", justify="right", style="dim")
-    table.add_column("Symbol", style="cyan", no_wrap=True)
-    table.add_column("Name", style="magenta")
-    table.add_column(f"Price ({currency_label})", justify="right", style="green")
-    table.add_column("Price (USD)", justify="right", style="dim green")
-    table.add_column(f"Market Cap ({currency_label})", justify="right", style="blue")
-    table.add_column("Trend (7d)", justify="center")
+    console = Console()
+    width = console.width
+    is_compact = width < 60
+
+    table = Table(title=title, expand=True, min_width=80)
+    table.add_column("Rank", justify="right", style="dim", no_wrap=True, visible=not is_compact)
+    table.add_column("Symbol", style="cyan")
+    table.add_column("Name", style="magenta", overflow="ellipsis", visible=not is_compact)
+    table.add_column(f"Price ({currency_label})", justify="right", style="green", no_wrap=True)
+    table.add_column("Price (USD)", justify="right", style="dim green", no_wrap=True)
+    table.add_column(f"Market Cap ({currency_label})", justify="right", style="blue", no_wrap=True)
+    table.add_column("Trend (7d)", justify="center", min_width=12)
     return table
 
 def render_error_panel(msg: str, error_type: str, debug: bool = False) -> Panel:
