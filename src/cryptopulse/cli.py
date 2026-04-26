@@ -173,6 +173,32 @@ async def run_watch(coin_ids: List[str], interval: int, snap: bool = False):
     fetcher = CryptoFetcher()
     snapped = False
     
+    # If snapping, we do one manual fetch and print first to get a clean record
+    if snap:
+        coins = await fetcher.get_latest_prices()
+        filtered_coins = [c for c in coins if c.id in coin_ids or c.symbol.lower() in coin_ids]
+        if filtered_coins:
+            sync_signal = Align.right(Text.from_markup("[blink green]●[/blink green]"))
+            table = Table(title="CryptoPulse Live Watcher")
+            table.add_column("Symbol", style="cyan")
+            table.add_column("Price (USD)", justify="right", style="green")
+            for coin in filtered_coins:
+                table.add_row(coin.symbol.upper(), format_currency(coin.current_price, "USD"))
+            
+            now = datetime.now().strftime("%H:%M:%S")
+            footer = Group(
+                Align.right(Text(f"Last Updated: {now}", style="dim")),
+                Align.center(Spinner("dots", text="Monitoring..."))
+            )
+            
+            # Print statically for a clean SVG record
+            console.print(sync_signal)
+            console.print(table)
+            console.print(footer)
+            export_ui_snap("watch")
+            snapped = True
+            console.print("\n[bold green]Continuing to live watcher...[/bold green]\n")
+
     with Live(auto_refresh=True, console=console) as live:
         while True:
             coins = await fetcher.get_latest_prices()
@@ -202,12 +228,6 @@ async def run_watch(coin_ids: List[str], interval: int, snap: bool = False):
                 )
                 
                 live.update(Group(sync_signal, table, footer))
-                
-                if snap and not snapped:
-                    # Small sleep to let the live display render before snapping
-                    await asyncio.sleep(0.5)
-                    export_ui_snap("watch")
-                    snapped = True
             
             await asyncio.sleep(interval)
 

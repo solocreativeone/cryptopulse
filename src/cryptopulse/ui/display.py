@@ -6,14 +6,18 @@ from rich.console import Group, Console
 from rich.panel import Panel
 from rich.align import Align
 
+import time
 from pathlib import Path
 
-console = Console(record=True)
+console = Console(record=True, width=100)
 
 def export_ui_snap(filename: str):
     """
     Captures the current console state and saves it as an SVG screenshot.
     """
+    # Small sleep to ensure terminal buffer is stable
+    time.sleep(0.2)
+    
     screenshot_dir = Path("docs/screenshots")
     screenshot_dir.mkdir(parents=True, exist_ok=True)
     
