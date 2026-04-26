@@ -34,17 +34,27 @@ pip install -e ".[test]"
 
 ## Usage
 
-The CLI command is `cryptopulse`. You can always use `cryptopulse --help` to see all available commands and options.
+The CLI command is `cryptopulse`. Shorthand commands are also available for instant access:
+- `cpl` → `list`
+- `cpw` → `watch`
+- `cpz` → `zen`
+- `cpg` → `global`
+
+You can always use `cryptopulse --help` to see all available commands and options.
 
 ### List Top Coins
-View the top 10 coins by market cap. You can specify any fiat or crypto currency for valuation:
+View the top 10 coins by market cap. You can specify any fiat or crypto currency for valuation and export data to JSON:
 ```bash
 # Default (USD)
-cryptopulse list
+cpl
 
 # Specified currency
-cryptopulse list --currency eur
-cryptopulse list -c sol
+cpl --currency eur
+cpl -c sol
+
+# Export to JSON file
+cpl --export
+cpl -e
 ```
 
 ### Coin Statistics
@@ -57,21 +67,27 @@ cryptopulse stat ethereum
 ### Global Market Data
 View overall crypto market statistics:
 ```bash
-cryptopulse global
+cpg
 ```
 
 ### Real-time Watcher
 Monitor specific coins in real-time with an auto-refreshing table:
 ```bash
 # Watch Bitcoin and Solana every 10 seconds
-cryptopulse watch bitcoin sol --interval 10
+cpw bitcoin sol --interval 10
 ```
 
 ### Zen Mode
 Minimalist price view for a specific coin with curated market philosophy quotes:
 ```bash
-cryptopulse zen btc
+cpz btc
 ```
+
+### Network Resilience
+CryptoPulse is designed for unstable connections. If the API is unreachable, it will:
+1. Automatically fallback to the local cache.
+2. Display a warning panel: `Network unreachable. Using local cache...`
+3. Provide "Stale" markers in live watcher mode.
 
 ### Debugging
 Run any command with the `--debug` flag to see full technical tracebacks on failure:

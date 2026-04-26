@@ -3,6 +3,9 @@ import typer
 import random
 import webbrowser
 import time
+import json
+import sys
+from pathlib import Path
 from datetime import datetime
 from typing import List, Optional, Dict
 from decimal import Decimal
@@ -41,11 +44,11 @@ ZEN_QUOTES = [
     "The most important quality for an investor is temperament, not intellect.",
 ]
 
-async def run_list(currency: str):
+async def run_list(currency: str, export: bool = False):
     fetcher = CryptoFetcher()
     converter = CurrencyConverter()
     
-    with console.status(f"[bold green]Fetching data and {currency} rates..."):
+    with console.status(f"[bold green]Fetching data and {currency} rates...", spinner="dots"):
         coins, _ = await asyncio.gather(
             fetcher.get_latest_prices(),
             converter.get_rates()
@@ -53,6 +56,9 @@ async def run_list(currency: str):
 
     if not coins:
         raise RuntimeError("Could not fetch coin data.")
+
+    if fetcher.is_stale or converter.is_stale:
+        console.print(Panel("[bold red]Network unreachable. Using local cache...[/bold red]", border_style="red"))
 
     crypto_prices = {coin.symbol: coin.current_price for coin in coins}
     crypto_prices.update({coin.id: coin.current_price for coin in coins})
@@ -78,6 +84,15 @@ async def run_list(currency: str):
         )
 
     console.print(table)
+
+    if export:
+        export_file = f"cryptopulse_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        try:
+            with open(export_file, "w") as f:
+                json.dump([coin.model_dump() for coin in coins], f, indent=4, default=str)
+            console.print(f"\n[bold green]✓ Data successfully exported to {export_file}[/bold green]")
+        except Exception as e:
+            console.print(f"\n[bold red]✗ Export failed: {e}[/bold red]")
 
 async def run_stat(coin_id: str):
     fetcher = CryptoFetcher()
@@ -144,10 +159,15 @@ async def run_watch(coin_ids: List[str], interval: int):
     with Live(auto_refresh=True, console=console) as live:
         while True:
             coins = await fetcher.get_latest_prices()
+            
+            if fetcher.is_stale:
+                sync_signal = Align.right(Text.from_markup("[blink red]![/blink red] [stale]"))
+            else:
+                sync_signal = Align.right(Text.from_markup("[blink green]●[/blink green]"))
+            
             filtered_coins = [c for c in coins if c.id in coin_ids or c.symbol.lower() in coin_ids]
             
             now = datetime.now().strftime("%H:%M:%S")
-            sync_signal = Align.right(Text.from_markup("[blink green]●[/blink green]"))
             
             if not filtered_coins:
                 live.update(Panel("[red]No watched coins found in top 100.[/red]", title="Watcher"))
@@ -193,11 +213,12 @@ async def run_zen(coin_id: str):
 @app.command()
 def list(
     currency: str = typer.Option("USD", "--currency", "-c", help="Currency to display prices in."),
+    export: bool = typer.Option(False, "--export", "-e", help="Export current data to a .json file."),
     debug: bool = typer.Option(False, "--debug", help="Show full traceback on error.")
 ):
     """List the latest prices for top cryptocurrencies."""
     try:
-        asyncio.run(run_list(currency))
+        asyncio.run(run_list(currency, export))
     except Exception as e:
         handle_error(e, debug)
 
@@ -288,6 +309,18 @@ def handle_error(e: Exception, debug: bool):
     
     if debug:
         raise e
+
+def cpl():
+    app(["list"] + sys.argv[1:])
+
+def cpw():
+    app(["watch"] + sys.argv[1:])
+
+def cpz():
+    app(["zen"] + sys.argv[1:])
+
+def cpg():
+    app(["global"] + sys.argv[1:])
 
 if __name__ == "__main__":
     app()

@@ -61,12 +61,17 @@ def format_currency(amount: Decimal, currency: str, precision: Optional[int] = N
 def create_crypto_table(title: str, currency_label: str) -> Table:
     console = Console()
     width = console.width
-    is_compact = width < 60
+    show_extra = width > 70
 
     table = Table(title=title, expand=True, min_width=80)
-    table.add_column("Rank", justify="right", style="dim", no_wrap=True, visible=not is_compact)
+    if show_extra:
+        table.add_column("Rank", justify="right", style="dim", no_wrap=True)
+    
     table.add_column("Symbol", style="cyan")
-    table.add_column("Name", style="magenta", overflow="ellipsis", visible=not is_compact)
+    
+    if show_extra:
+        table.add_column("Name", style="magenta", overflow="ellipsis")
+        
     table.add_column(f"Price ({currency_label})", justify="right", style="green", no_wrap=True)
     table.add_column("Price (USD)", justify="right", style="dim green", no_wrap=True)
     table.add_column(f"Market Cap ({currency_label})", justify="right", style="blue", no_wrap=True)

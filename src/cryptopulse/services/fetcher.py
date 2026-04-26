@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import List, Optional, Dict, Any
 from decimal import Decimal
 from ..models import Coin, GlobalData
-from ..api.client import CryptoAPIClient
+from ..api.client import CryptoAPIClient, NetworkError
 
 CACHE_FILE = Path("~/.cryptopulse/cache.json").expanduser()
 TTL_60S = 60
@@ -13,12 +13,14 @@ TTL_60S = 60
 class CryptoFetcher:
     def __init__(self):
         self.client = CryptoAPIClient()
+        self.is_stale = False
 
     @property
     def api_url(self) -> str:
         return f"{self.client.base_url}/coins/markets"
 
     async def get_latest_prices(self, per_page: int = 100) -> List[Coin]:
+        self.is_stale = False
         cached_data = self._load_cache()
         if cached_data:
             timestamp = cached_data.get("timestamp", 0)
@@ -29,7 +31,8 @@ class CryptoFetcher:
             data = await self.client.get_markets(per_page=per_page)
             self._save_cache(data)
             return [self._parse_coin(item) for item in data]
-        except Exception:
+        except (NetworkError, Exception):
+            self.is_stale = True
             if cached_data:
                 return [self._parse_coin(item) for item in cached_data.get("data", [])]
             return []

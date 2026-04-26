@@ -28,6 +28,10 @@ test = [
 
 [project.scripts]
 cryptopulse = "cryptopulse.cli:app"
+cpl = "cryptopulse.cli:cpl"
+cpw = "cryptopulse.cli:cpw"
+cpz = "cryptopulse.cli:cpz"
+cpg = "cryptopulse.cli:cpg"
 
 [tool.setuptools.packages.find]
 where = ["src"]

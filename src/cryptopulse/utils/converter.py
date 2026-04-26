@@ -3,7 +3,7 @@ import time
 from pathlib import Path
 from decimal import Decimal
 from typing import Dict, Optional
-from ..api.client import FiatAPIClient
+from ..api.client import FiatAPIClient, NetworkError
 from .finance import FinancialCalculator
 
 RATES_CACHE = Path("~/.cryptopulse/rates.json").expanduser()
@@ -14,6 +14,7 @@ class CurrencyConverter:
         self.client = FiatAPIClient()
         self.calculator = FinancialCalculator()
         self.fallback_ngn = Decimal("1354.0")
+        self.is_stale = False
 
     @property
     def fiat_rates(self) -> Dict[str, Decimal]:
@@ -24,6 +25,7 @@ class CurrencyConverter:
         self.calculator.set_fiat_rates(rates)
 
     async def get_rates(self) -> Dict[str, Decimal]:
+        self.is_stale = False
         cached_data = self._load_cache()
         if cached_data:
             rates = {k: Decimal(str(v)) for k, v in cached_data.get("rates", {}).items()}
@@ -38,7 +40,8 @@ class CurrencyConverter:
             new_rates["USD"] = Decimal("1.0")
             self._save_cache(new_rates)
             self.calculator.set_fiat_rates(new_rates)
-        except Exception:
+        except (NetworkError, Exception):
+            self.is_stale = True
             if cached_data:
                 rates = {k: Decimal(str(v)) for k, v in cached_data.get("rates", {}).items()}
                 self.calculator.set_fiat_rates(rates)
