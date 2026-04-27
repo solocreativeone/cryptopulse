@@ -18,6 +18,10 @@ from rich.text import Text
 from rich.spinner import Spinner
 from pydantic import ValidationError
 from httpx import HTTPStatusError, RequestError
+from dotenv import load_dotenv
+
+# Load environment variables early
+load_dotenv()
 
 from .services.fetcher import CryptoFetcher
 from .utils.converter import CurrencyConverter

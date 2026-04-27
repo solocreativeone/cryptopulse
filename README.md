@@ -14,9 +14,18 @@ High-performance, production-grade cryptocurrency CLI utility with high-precisio
 - 🧘 **Minimalist Mode:** A focused `zen` view with curated market philosophy quotes for deep focus.
 - 📸 **Auto-Doc Screenshots:** Generate high-fidelity SVG screenshots of any terminal output using the `--snap` flag.
 
+## 🧙 The Wizard Commands
+
+Speed is everything. CryptoPulse includes built-in 3-letter shorthands to bypass the full command prefix:
+
+* **`cpl`** — Instant Market **L**ist
+* **`cpw`** — Live Market **W**atcher
+* **`cpz`** — Focused **Z**en Mode
+* **`cpg`** — **G**lobal Market Analytics
+
 ## Visuals
 
-Experience CryptoPulse in your terminal. These screenshots are automatically generated using the `--snap` flag.
+Experience CryptoPulse in your terminal. These screenshots are **auto-generated** by the CLI's built-in `--snap` engine, ensuring they always reflect the latest UI.
 
 ### Market Overview
 ![List View](docs/screenshots/list.svg)
@@ -50,8 +59,17 @@ Experience CryptoPulse in your terminal. These screenshots are automatically gen
 git clone https://github.com/solocreativeone/cryptopulse.git
 cd cryptopulse
 
+# Set up virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
 # Install in editable mode with test dependencies
+# NOTE: Editable mode (-e) is required to activate the shorthand wizard aliases!
 pip install -e ".[test]"
+
+# Configure environment variables
+cp .env.example .env
+# Edit .env with your API keys for enhanced rate limits
 ```
 
 ## Usage
@@ -106,10 +124,16 @@ cpz btc
 ```
 
 ### Network Resilience
-CryptoPulse is designed for unstable connections. If the API is unreachable, it will:
-1. Automatically fallback to the local cache.
-2. Display a warning panel: `Network unreachable. Using local cache...`
-3. Provide "Stale" markers in live watcher mode.
+CryptoPulse is built to survive outages and rate limits. If the primary API (CoinGecko) is unreachable or hits a 429 error, the system will:
+1. **Switch Providers:** Automatically rotate to Mobula or CoinPaprika for fresh data.
+2. **Local Fallback:** If all providers fail, it serves data from the 60s local cache.
+3. **Stale Awareness:** Displays a `[stale]` warning panel to ensure users know they are viewing cached data.
+
+### Configuration (Environment Variables)
+For professional use, you can customize the provider endpoints in your `.env` file:
+* `CP_COINGECKO_API_KEY`: Unlocks higher rate limits for CoinGecko.
+* `CP_MOBULA_API_KEY`: Optional key for the Mobula fallback.
+* `CP_COINGECKO_BASE_URL`: Override default endpoints (e.g., for Pro API).
 
 ### Debugging
 Run any command with the `--debug` flag to see full technical tracebacks on failure:
@@ -117,11 +141,26 @@ Run any command with the `--debug` flag to see full technical tracebacks on fail
 cryptopulse list --debug
 ```
 
+## 🏗️ Technical Architecture
+
+### Engineering Focus
+CryptoPulse is built with a focus on absolute precision and resilience:
+- **Resilient Multi-Provider Fallback:** The system implements a sophisticated provider chain: `CoinGecko (Primary) → Mobula (Secondary) → CoinPaprika (Final)`. If a provider returns a 429 (Rate Limit) or is unreachable, the system automatically falls back to the next in line.
+- **Tiered Data Caching:** High-speed 60s cache stored at `~/.cryptopulse_cache.json` minimizes API overhead, while a 24hr cache handles exchange rates.
+- **Financial Integrity:** Powered by the `decimal` library to ensure 100% mathematical accuracy across all currency conversions.
+- **Secure by Design:** Zero hardcoded API keys. All configuration is managed via `.env` files and `os.getenv` for production safety.
+
 ## Testing
 Run the comprehensive test suite to verify precision and cache logic:
 ```bash
 pytest
 ```
+
+## 🧑‍💻 Maintainer
+
+Developed and maintained by **SoloCreativeOne**. 
+
+This project is a testament to my engineering growth and technical specialization at the **Digital Bridge Institute**
 
 ## License
 [MIT](LICENSE)
