@@ -28,7 +28,10 @@ Speed is everything. CryptoPulse includes built-in 3-letter shorthands to bypass
 Experience CryptoPulse in your terminal. These screenshots are **auto-generated** by the CLI's built-in `--snap` engine, ensuring they always reflect the latest UI.
 
 ### Market Overview
-![List View](docs/screenshots/list.svg)
+Experience multi-currency support with optimized layouts for high-value fiat conversions like NGN.
+
+![List View USD](docs/screenshots/list.svg)
+![List View NGN](docs/screenshots/list_ngn.svg)
 
 ### Deep Analytics
 <p align="center">
@@ -158,7 +161,9 @@ pytest
 
 ## 🧑‍💻 Maintainer
 
-Developed and maintained by **SoloCreativeOne**. 
+Developed and maintained by **SoloCreativeOne**.
+
+[![Follow on X](https://img.shields.io/badge/X.com-solocreativeone-000000?style=for-the-badge&logo=x&logoColor=white)](https://x.com/solocreativeone)
 
 This project is a testament to my engineering growth and technical specialization at the **Digital Bridge Institute**
 

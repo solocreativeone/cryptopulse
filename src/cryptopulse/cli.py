@@ -90,21 +90,32 @@ async def run_list(currency: str, export: bool = False, snap: bool = False):
     currency_label = currency.upper()
     table = create_crypto_table(f"CryptoPulse - Top 10 Coins (vs {currency_label})", currency_label)
 
+    # Determine if extra columns are shown based on the same logic as create_crypto_table
+    show_extra = console.width > 70
+
     for i, coin in enumerate(coins[:10], 1):
         converted_price = converter.convert(coin.current_price, currency)
         converted_cap = converter.convert(coin.market_cap, currency) if coin.market_cap else None
         
-        spark = get_high_density_sparkline(coin.sparkline_7d)
+        spark = get_high_density_sparkline(coin.sparkline_7d, width=10)
         
-        table.add_row(
-            str(i),
-            coin.symbol.upper(),
-            coin.name,
+        row = []
+        if show_extra:
+            row.append(str(i))
+        
+        row.append(coin.symbol.upper())
+        
+        if show_extra:
+            row.append(coin.name)
+            
+        row.extend([
             format_currency(converted_price, currency),
             format_currency(coin.current_price, "USD"),
             format_currency(converted_cap, currency) if converted_cap else "N/A",
             spark
-        )
+        ])
+        
+        table.add_row(*row)
 
     console.print(table)
     if snap:

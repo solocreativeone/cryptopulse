@@ -107,6 +107,8 @@ def format_currency(amount: Decimal, currency: str, precision: Optional[int] = N
             precision = 2
         elif currency_upper in ["BTC", "ETH", "SOL"] or (0 < amount < 1):
             precision = 4
+        elif currency_upper == "NGN" and amount >= 100:
+            precision = 0
         else:
             precision = 2
             
@@ -122,7 +124,7 @@ def create_crypto_table(title: str, currency_label: str) -> Table:
     width = console.width
     show_extra = width > 70
 
-    table = Table(title=title, expand=True, min_width=80)
+    table = Table(title=title, expand=False, min_width=80)
     if show_extra:
         table.add_column("Rank", justify="right", style="dim", no_wrap=True)
     
@@ -133,8 +135,8 @@ def create_crypto_table(title: str, currency_label: str) -> Table:
         
     table.add_column(f"Price ({currency_label})", justify="right", style="green", no_wrap=True)
     table.add_column("Price (USD)", justify="right", style="dim green", no_wrap=True)
-    table.add_column(f"Market Cap ({currency_label})", justify="right", style="blue", no_wrap=True)
-    table.add_column("Trend (7d)", justify="center", min_width=12)
+    table.add_column(f"Cap ({currency_label})", justify="right", style="blue", no_wrap=True)
+    table.add_column("Trend", justify="center", min_width=10)
     return table
 
 def render_error_panel(msg: str, error_type: str, debug: bool = False) -> Panel:
