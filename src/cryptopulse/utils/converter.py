@@ -4,12 +4,8 @@ from pathlib import Path
 from decimal import Decimal
 from typing import Dict, Optional
 from ..api.client import FiatAPIClient, NetworkError
+from ..config import RATES_CACHE_FILE as RATES_CACHE, RATES_TTL as TTL_24H, FALLBACK_NGN_RATE
 from .finance import FinancialCalculator
-
-# Cache file for fiat exchange rates
-RATES_CACHE = Path("~/.cryptopulse/rates.json").expanduser()
-# 24 hours time-to-live for exchange rates
-TTL_24H = 24 * 60 * 60
 
 class CurrencyConverter:
     """
@@ -22,7 +18,7 @@ class CurrencyConverter:
     def __init__(self):
         self.client = FiatAPIClient()
         self.calculator = FinancialCalculator()
-        self.fallback_ngn = Decimal("1354.0")
+        self.fallback_ngn = FALLBACK_NGN_RATE
         self.is_stale = False
 
     @property

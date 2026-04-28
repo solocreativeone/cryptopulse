@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 from typing import List, Optional, Dict, Any
 from decimal import Decimal
+from ..config import PRICES_CACHE_FILE as CACHE_FILE, PRICES_TTL as TTL_60S
 from ..models import Coin, GlobalData
 from ..api.client import (
     CoinGeckoProvider, 
@@ -12,10 +13,6 @@ from ..api.client import (
     NetworkError, 
     RateLimitError
 )
-
-# Refined Cache Location as requested
-CACHE_FILE = Path("~/.cryptopulse_cache.json").expanduser()
-TTL_60S = 60
 
 class CryptoFetcher:
     """
@@ -146,6 +143,7 @@ class CryptoFetcher:
 
     def _save_cache(self, data: Any):
         try:
+            CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
             CACHE_FILE.write_text(json.dumps({
                 "data": data,
                 "timestamp": time.time()

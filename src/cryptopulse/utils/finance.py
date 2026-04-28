@@ -1,5 +1,6 @@
 from decimal import Decimal
 from typing import Dict, Optional
+from ..config import FALLBACK_NGN_RATE
 
 def calculate_ath_percentage(current_price: Decimal, ath_price: Decimal) -> Decimal:
     if not ath_price or ath_price == 0:
@@ -10,7 +11,7 @@ class FinancialCalculator:
     def __init__(self):
         self.fiat_rates: Dict[str, Decimal] = {"USD": Decimal("1.0")}
         self.crypto_rates: Dict[str, Decimal] = {}
-        self.fallback_ngn = Decimal("1354.0")
+        self.fallback_ngn = FALLBACK_NGN_RATE
 
     def set_fiat_rates(self, rates: Dict[str, Decimal]):
         self.fiat_rates = rates

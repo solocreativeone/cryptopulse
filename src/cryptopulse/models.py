@@ -1,9 +1,11 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict, field_serializer
 from typing import Optional, List, Dict
 from datetime import datetime
 from decimal import Decimal
 
 class Coin(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     id: str
     symbol: str
     name: str
@@ -17,11 +19,13 @@ class Coin(BaseModel):
     last_updated: datetime = Field(default_factory=datetime.utcnow)
     sparkline_7d: Optional[List[Decimal]] = None
 
-    class Config:
-        populate_by_name = True
-        json_encoders = {
-            Decimal: lambda v: str(v)
-        }
+    @field_serializer("current_price", "market_cap", "total_volume", "high_24h", "low_24h", "ath", "sparkline_7d")
+    def serialize_decimal(self, v: Optional[Decimal | List[Decimal]], _info):
+        if v is None:
+            return None
+        if isinstance(v, list):
+            return [str(item) for item in v]
+        return str(v)
 
 class GlobalData(BaseModel):
     total_market_cap: Dict[str, Decimal]
