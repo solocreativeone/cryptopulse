@@ -149,8 +149,9 @@ cryptopulse list --debug
 ### Engineering Focus
 CryptoPulse is built with a focus on absolute precision and resilience:
 - **Resilient Multi-Provider Fallback:** The system implements a sophisticated provider chain: `CoinGecko (Primary) → Mobula (Secondary) → CoinPaprika (Final)`. If a provider returns a 429 (Rate Limit) or is unreachable, the system automatically falls back to the next in line.
-- **Tiered Data Caching:** High-speed 60s cache stored at `~/.cryptopulse_cache.json` minimizes API overhead, while a 24hr cache handles exchange rates.
+- **Tiered Data Caching:** High-speed cache stored in `~/.cryptopulse/` minimizes API overhead (60s for prices, 24hr for exchange rates).
 - **Financial Integrity:** Powered by the `decimal` library to ensure 100% mathematical accuracy across all currency conversions.
+- **Modern Architecture:** Fully compatible with Pydantic V2 for high-performance data validation and serialization.
 - **Secure by Design:** Zero hardcoded API keys. All configuration is managed via `.env` files and `os.getenv` for production safety.
 
 ## Testing
