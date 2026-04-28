@@ -63,7 +63,7 @@ git clone https://github.com/solocreativeone/cryptopulse.git
 cd cryptopulse
 
 # Set up virtual environment
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
 # Install in editable mode with test dependencies
