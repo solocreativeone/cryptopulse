@@ -166,7 +166,5 @@ Developed and maintained by **SoloCreativeOne**.
 
 [![Follow on X](https://img.shields.io/badge/X.com-solocreativeone-000000?style=for-the-badge&logo=x&logoColor=white)](https://x.com/solocreativeone)
 
-This project is a testament to my engineering growth and technical specialization at the **Digital Bridge Institute**
-
 ## License
 [MIT](LICENSE)

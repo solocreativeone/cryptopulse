@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, ConfigDict, field_serializer
 from typing import Optional, List, Dict
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 
 class Coin(BaseModel):
@@ -16,7 +16,7 @@ class Coin(BaseModel):
     low_24h: Optional[Decimal] = None
     ath: Optional[Decimal] = None
     ath_date: Optional[datetime] = None
-    last_updated: datetime = Field(default_factory=datetime.utcnow)
+    last_updated: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     sparkline_7d: Optional[List[Decimal]] = None
 
     @field_serializer("current_price", "market_cap", "total_volume", "high_24h", "low_24h", "ath", "sparkline_7d")
