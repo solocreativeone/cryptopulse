@@ -3,7 +3,7 @@
 High-performance, production-grade cryptocurrency CLI utility with high-precision financial logic and global currency support.
 
 <p align="center">
-  <h2 align="center">🚀 Features</h2>
+  <h2 align="center">Features</h2>
 </p>
 
 - 🌍 **Real-time Global Data:** Fetch latest prices and market caps for top cryptocurrencies instantly.
