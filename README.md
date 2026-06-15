@@ -235,9 +235,11 @@ pytest
 
 Developed and maintained by **SoloCreativeOne**.
 
+Co-authored-by: Luckingz <luckyajidoku.com@gmail.com>
+
 [![Follow on X](https://img.shields.io/badge/X.com-solocreativeone-000000?style=for-the-badge&logo=x&logoColor=white)](https://x.com/solocreativeone)
 
 ## License
 [MIT](LICENSE)
 
-Co-authored-by: Luckingz <luckyajidoku.com@gmail.com>
+
