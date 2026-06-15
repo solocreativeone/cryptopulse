@@ -185,17 +185,27 @@ Minimalist price view for a specific coin with curated market philosophy quotes:
 cpz btc
 ```
 
-### Network Resilience
-CryptoPulse is built to survive outages and rate limits. If the primary API (CoinGecko) is unreachable or hits a 429 error, the system will:
-1. **Switch Providers:** Automatically rotate to Mobula or CoinPaprika for fresh data.
-2. **Local Fallback:** If all providers fail, it serves data from the 60s local cache.
-3. **Stale Awareness:** Displays a `[stale]` warning panel to ensure users know they are viewing cached data.
+## Network Resilience
 
-### Configuration (Environment Variables)
-For professional use, you can customize the provider endpoints in your `.env` file:
-* `CP_COINGECKO_API_KEY`: Unlocks higher rate limits for CoinGecko.
-* `CP_MOBULA_API_KEY`: Optional key for the Mobula fallback.
-* `CP_COINGECKO_BASE_URL`: Override default endpoints (e.g., for Pro API).
+CryptoPulse is built to survive outages and rate limits. If the primary API (CoinGecko) is unreachable or hits a `429` error, the system will:
+
+1. **Switch providers** — automatically rotate to Mobula or CoinPaprika for fresh data.
+2. **Local fallback** — if all providers fail, serve data from the 60-second local cache.
+3. **Stale awareness** — display a `[stale]` warning panel so you always know when you're viewing cached data.
+
+Provider chain: **CoinGecko** (primary) → **Mobula** (secondary) → **CoinPaprika** (final fallback)
+
+## Configuration
+
+For professional use, configure provider endpoints via your `.env` file:
+
+| Variable | Description |
+|---|---|
+| `CP_COINGECKO_API_KEY` | Unlocks higher rate limits for CoinGecko |
+| `CP_MOBULA_API_KEY` | Optional key for the Mobula fallback provider |
+| `CP_COINGECKO_BASE_URL` | Override default endpoints (e.g. for the Pro API) |
+
+All keys are loaded via `os.getenv` — no secrets are ever hardcoded.
 
 ### Debugging
 Run any command with the `--debug` flag to see full technical tracebacks on failure:
