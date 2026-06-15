@@ -239,3 +239,5 @@ Developed and maintained by **SoloCreativeOne**.
 
 ## License
 [MIT](LICENSE)
+
+Co-authored-by: Luckingz <luckyajidoku.com@gmail.com>
