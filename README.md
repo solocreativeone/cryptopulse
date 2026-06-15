@@ -191,11 +191,17 @@ CryptoPulse is built to survive outages and rate limits. If the primary API (Coi
 2. **Local Fallback:** If all providers fail, it serves data from the 60s local cache.
 3. **Stale Awareness:** Displays a `[stale]` warning panel to ensure users know they are viewing cached data.
 
-### Configuration (Environment Variables)
-For professional use, you can customize the provider endpoints in your `.env` file:
-* `CP_COINGECKO_API_KEY`: Unlocks higher rate limits for CoinGecko.
-* `CP_MOBULA_API_KEY`: Optional key for the Mobula fallback.
-* `CP_COINGECKO_BASE_URL`: Override default endpoints (e.g., for Pro API).
+## Configuration
+
+For professional use, configure provider endpoints via your `.env` file:
+
+| Variable | Description |
+|---|---|
+| `CP_COINGECKO_API_KEY` | Unlocks higher rate limits for CoinGecko |
+| `CP_MOBULA_API_KEY` | Optional key for the Mobula fallback provider |
+| `CP_COINGECKO_BASE_URL` | Override default endpoints (e.g. for the Pro API) |
+
+All keys are loaded via `os.getenv` — no secrets are ever hardcoded.
 
 ### Debugging
 Run any command with the `--debug` flag to see full technical tracebacks on failure:
