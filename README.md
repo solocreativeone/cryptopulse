@@ -1,6 +1,7 @@
 # CryptoPulse
 
 High-performance, production-grade cryptocurrency CLI utility with high-precision financial logic and global currency support.
+
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://python.org)
 [![Typer](https://img.shields.io/badge/Typer-CLI-green)](https://typer.tiangolo.com)
 [![Rich](https://img.shields.io/badge/Rich-UI-purple)](https://rich.readthedocs.io)
