@@ -1,6 +1,30 @@
 # CryptoPulse
 
 High-performance, production-grade cryptocurrency CLI utility with high-precision financial logic and global currency support.
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://python.org)
+[![Typer](https://img.shields.io/badge/Typer-CLI-green)](https://typer.tiangolo.com)
+[![Rich](https://img.shields.io/badge/Rich-UI-purple)](https://rich.readthedocs.io)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
+
+---
+## Table of Contents
+
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Quick Start — Wizard Commands](#quick-start--wizard-commands)
+- [Usage](#usage)
+- [Visuals](#visuals)
+- [Network Resilience](#network-resilience)
+- [Configuration](#configuration)
+- [Technical Architecture](#technical-architecture)
+- [Testing](#testing)
+- [Debugging](#debugging)
+- [Maintainer](#maintainer)
+- [License](#license)
+
+---
+
 
 <p align="center">
   <h2 align="center">Features</h2>
@@ -14,14 +38,48 @@ High-performance, production-grade cryptocurrency CLI utility with high-precisio
 - 🧘 **Minimalist Mode:** A focused `zen` view with curated market philosophy quotes for deep focus.
 - 📸 **Auto-Doc Screenshots:** Generate high-fidelity SVG screenshots of any terminal output using the `--snap` flag.
 
-## The Wizard Commands
+## Requirements
+
+- Python 3.10 or higher
+- pip (for package installation)
+
+---
+
+## Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/solocreativeone/cryptopulse.git
+cd cryptopulse
+
+# Set up a virtual environment
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install in editable mode with test dependencies
+# NOTE: Editable mode (-e) is required to activate the shorthand wizard aliases!
+pip install -e ".[test]"
+
+# Configure environment variables
+cp .env.example .env
+# Edit .env with your API keys for enhanced rate limits
+```
+
+---
+## Quick Start — Wizard Commands
 
 Speed is everything. CryptoPulse includes built-in 3-letter shorthands to bypass the full command prefix:
 
-* **`cpl`** — Instant Market **L**ist
-* **`cpw`** — Live Market **W**atcher
-* **`cpz`** — Focused **Z**en Mode
-* **`cpg`** — **G**lobal Market Analytics
+| Alias | Command     | Description              |
+|-------|-------------|--------------------------|
+| `cpl` | `list`      | Instant market list      |
+| `cpw` | `watch`     | Live market watcher      |
+| `cpz` | `zen`       | Focused zen mode         |
+| `cpg` | `global`    | Global market analytics  |
+
+> These aliases are only available after installing in editable mode (`pip install -e`).
+
+---
 
 ## Visuals
 
