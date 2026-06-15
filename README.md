@@ -203,15 +203,17 @@ Run any command with the `--debug` flag to see full technical tracebacks on fail
 cryptopulse list --debug
 ```
 
+---
+
 ## Technical Architecture
 
-### Engineering Focus
-CryptoPulse is built with a focus on absolute precision and resilience:
-- **Resilient Multi-Provider Fallback:** The system implements a sophisticated provider chain: `CoinGecko (Primary) → Mobula (Secondary) → CoinPaprika (Final)`. If a provider returns a 429 (Rate Limit) or is unreachable, the system automatically falls back to the next in line.
-- **Tiered Data Caching:** High-speed cache stored in `~/.cryptopulse/` minimizes API overhead (60s for prices, 24hr for exchange rates).
-- **Financial Integrity:** Powered by the `decimal` library to ensure 100% mathematical accuracy across all currency conversions.
-- **Modern Architecture:** Fully compatible with Pydantic V2 for high-performance data validation and serialization.
-- **Secure by Design:** Zero hardcoded API keys. All configuration is managed via `.env` files and `os.getenv` for production safety.
+- **Multi-provider fallback** — The provider chain (CoinGecko → Mobula → CoinPaprika) handles `429` rate limits and network failures automatically.
+- **Tiered caching** — A high-speed cache in `~/.cryptopulse/` minimises API overhead (60s TTL for prices, 24hr for exchange rates).
+- **Financial integrity** — All currency conversions use Python's `decimal` library for 100% mathematical accuracy.
+- **Pydantic V2** — High-performance data validation and serialisation throughout.
+- **Secure by design** — Zero hardcoded API keys; all configuration is managed via `.env` files.
+
+---
 
 ## Testing
 Run the comprehensive test suite to verify precision and cache logic:
