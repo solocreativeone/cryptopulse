@@ -14,7 +14,7 @@ High-performance, production-grade cryptocurrency CLI utility with high-precisio
 - 🧘 **Minimalist Mode:** A focused `zen` view with curated market philosophy quotes for deep focus.
 - 📸 **Auto-Doc Screenshots:** Generate high-fidelity SVG screenshots of any terminal output using the `--snap` flag.
 
-## 🧙 The Wizard Commands
+## The Wizard Commands
 
 Speed is everything. CryptoPulse includes built-in 3-letter shorthands to bypass the full command prefix:
 
