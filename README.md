@@ -144,7 +144,7 @@ Run any command with the `--debug` flag to see full technical tracebacks on fail
 cryptopulse list --debug
 ```
 
-## 🏗️ Technical Architecture
+## Technical Architecture
 
 ### Engineering Focus
 CryptoPulse is built with a focus on absolute precision and resilience:
@@ -160,7 +160,7 @@ Run the comprehensive test suite to verify precision and cache logic:
 pytest
 ```
 
-## 🧑‍💻 Maintainer
+## Maintainer
 
 Developed and maintained by **SoloCreativeOne**.
 
