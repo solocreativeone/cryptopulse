@@ -13,7 +13,7 @@ High-performance, production-grade cryptocurrency CLI utility with high-precisio
 - [Features](#features)
 - [Requirements](#requirements)
 - [Installation](#installation)
-- [Quick Start — Wizard Commands](#quick-start--wizard-commands)
+- [Quick Start - Wizard Commands](#quick-start--wizard-commands)
 - [Usage](#usage)
 - [Visuals](#visuals)
 - [Network Resilience](#network-resilience)
@@ -67,7 +67,7 @@ cp .env.example .env
 ```
 
 ---
-## Quick Start — Wizard Commands
+## Quick Start - Wizard Commands
 
 Speed is everything. CryptoPulse includes built-in 3-letter shorthands to bypass the full command prefix:
 
