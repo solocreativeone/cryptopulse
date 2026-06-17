@@ -233,7 +233,7 @@ pytest
 
 ## Maintainer
 
-Developed and maintained by **SoloCreativeOne**.
+Developed and maintained by **Solocreativeone**.
 
 [![Follow on X](https://img.shields.io/badge/X.com-solocreativeone-000000?style=for-the-badge&logo=x&logoColor=white)](https://x.com/solocreativeone)
 
